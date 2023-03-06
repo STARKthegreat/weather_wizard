@@ -1,6 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:weather_wizard/models/weather_model.dart';
 
 void main() {
+  Hive.initFlutter();
+  Hive.registerAdapter(CloudsAdapter());
+  Hive.registerAdapter(WindAdapter());
+  Hive.registerAdapter(MainAdapter());
+  Hive.registerAdapter(SysAdapter());
+  Hive.registerAdapter(CoordAdapter());
+  Hive.registerAdapter(WeatherAdapter());
+  Hive.registerAdapter(WeatherModelAdapter());
   runApp(const MyApp());
 }
 

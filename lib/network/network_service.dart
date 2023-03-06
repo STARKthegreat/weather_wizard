@@ -28,7 +28,7 @@ class NetworkService {
     return null;
   }
 
-  static Future<http.Response?>? _sendRequest({
+  static Future<http.Response?>? sendRequest({
     required RequestType requestType,
     required String url,
     Map<String, dynamic>? body,
