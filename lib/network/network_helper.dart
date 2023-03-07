@@ -1,12 +1,13 @@
 // concat headers
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:weather_wizard/network/network_enums.dart';
 import 'package:weather_wizard/network/network_typedef.dart';
 import 'package:http/http.dart' as http;
 
 class NetworkHelper {
-  static concatUrlQP(String url, Map<String, String>? queryParam) {
+  static String concatUrlQP(String url, Map<String, String>? queryParam) {
     if (url.isEmpty) return url;
     if (queryParam == null || queryParam.isEmpty) return url;
     final StringBuffer stringBuffer = StringBuffer("$url?");
@@ -47,6 +48,7 @@ class NetworkHelper {
       return onFailureCallBackWithMessage(
           NetworkResponseErrorType.didNotSucceed, 'Unknown');
     } catch (e) {
+      log(response!.body.toString());
       return onFailureCallBackWithMessage(
           NetworkResponseErrorType.exception, 'Exception: $e');
     }

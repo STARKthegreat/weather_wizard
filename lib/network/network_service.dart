@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:weather_wizard/network/network_helper.dart';
 
@@ -47,7 +47,7 @@ class NetworkService {
 
       return response;
     } catch (e) {
-      debugPrint('Error - $e');
+      log('Error - $e');
       return null;
     }
   }
