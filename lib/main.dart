@@ -9,6 +9,7 @@ import 'package:weather_wizard/network/network_service.dart';
 import 'package:weather_wizard/network/query_params.dart';
 import 'package:weather_wizard/res/const/app_url.dart';
 import 'package:weather_wizard/views/home_view.dart';
+import 'package:weather_wizard/models/weather_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
