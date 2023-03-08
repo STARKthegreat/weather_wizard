@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:weather_wizard/models/weather_model.dart';
@@ -49,56 +48,99 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({super.key, required this.title});
   final String title;
+  @override
+  State<Home> createState() => _HomeState();
+}
 
+class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text(widget.title),
         centerTitle: true,
       ),
       body: FutureBuilder(
         future: getWeather(),
-        builder: (context, snapshot) {
-          log(snapshot.data.toString());
-          if (snapshot.connectionState == ConnectionState.done &&
-              snapshot.hasData) {
-            final List<WeatherModel> weather =
-                snapshot.data as List<WeatherModel>;
-            return ListView.builder(
-              itemCount: weather.length,
-              itemBuilder: (context, index) {
-                return HomePage(weatherModel: weather[index]);
-              },
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: const [
-                  Icon(
-                    Icons.error_outline,
-                    color: Colors.red,
-                    size: 25,
+        builder: (context, AsyncSnapshot<WeatherModel?> snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            default:
+              if (snapshot.hasError) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        color: Colors.red,
+                        size: 25,
+                      ),
+                      Text('Error - $snapshot.error'),
+                    ],
                   ),
-                  Text('Something Went Wrong')
-                ],
-              ),
-            );
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+                );
+              } else if (snapshot.hasData &&
+                  snapshot.connectionState == ConnectionState.done) {
+                // return HomePage(weather: snapshot.data!.weather![1]);
+                List weather = snapshot.data!.weather!;
+                return ListView.builder(
+                  itemCount: weather.length,
+                  itemBuilder: (context, index) {
+                    log(weather.length.toString());
+                    return HomePage(
+                      weather: weather[index],
+                    );
+                  },
+                );
+              } else {
+                return const Center(
+                  child: Text('Oops Response is empty'),
+                );
+              }
           }
+          // log(snapshot.hasData.toString());
+          // if (snapshot.connectionState == ConnectionState.done &&
+          //     snapshot.hasData) {
+          //   final List<WeatherModel> weather =
+          //       snapshot.data as List<WeatherModel>;
+          //   return ListView.builder(
+          //     itemCount: weather.length,
+          //     itemBuilder: (context, index) {
+          //       return HomePage(weatherModel: weather[index]);
+          //     },
+          //   );
+          // } else if (snapshot.hasError) {
+          //   return Center(
+          //     child: Column(
+          //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //       children: const [
+          //         Icon(
+          //           Icons.error_outline,
+          //           color: Colors.red,
+          //           size: 25,
+          //         ),
+          //         Text('Something Went Wrong')
+          //       ],
+          //     ),
+          //   );
+          // } else {
+          //   return const Center(
+          //     child: CircularProgressIndicator(),
+          //   );
+          // }
         },
       ),
     );
   }
 
-  static Future<List<WeatherModel>?> getWeather() async {
+  Future<WeatherModel?> getWeather() async {
     final response = await NetworkService.sendRequest(
       requestType: RequestType.get,
       url: AppUrl().baseUrl,
@@ -109,10 +151,10 @@ class Home extends StatelessWidget {
     );
 
     log(response!.statusCode.toString());
-
+    WeatherModel output = weatherModelFromJson(response.body);
     return await NetworkHelper.filterResponse(
       callBack: (json) {
-        log(json.toString());
+        log(output.base!);
       },
       response: response,
       parameterName: CallBackParameterName.all,

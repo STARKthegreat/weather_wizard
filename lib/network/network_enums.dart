@@ -7,6 +7,7 @@ enum NetworkResponseErrorType {
 
 enum CallBackParameterName {
   all,
+  weather,
 }
 
 extension CallBackParameterNameExtension on CallBackParameterName {
@@ -14,6 +15,8 @@ extension CallBackParameterNameExtension on CallBackParameterName {
     switch (this) {
       case CallBackParameterName.all:
         return json;
+      case CallBackParameterName.weather:
+        return json['weather'];
     }
   }
 }

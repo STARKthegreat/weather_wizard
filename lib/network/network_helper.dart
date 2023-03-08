@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:weather_wizard/models/weather_model.dart';
 import 'package:weather_wizard/network/network_enums.dart';
 import 'package:weather_wizard/network/network_typedef.dart';
 import 'package:http/http.dart' as http;
@@ -35,11 +36,11 @@ class NetworkHelper {
             NetworkResponseErrorType.responseEmpty, 'Response is empty');
       }
 
-      var json = jsonDecode(response.body);
+      WeatherModel output = weatherModelFromJson(response.body);
 
       if (response.statusCode == 200) {
-        if (_isValidResponse(json)) {
-          return callBack(parameterName.getJson(json));
+        if (_isValidResponse(output)) {
+          return callBack(parameterName.getJson(output));
         }
       } else if (response.statusCode == 1708) {
         return onFailureCallBackWithMessage(
@@ -48,7 +49,8 @@ class NetworkHelper {
       return onFailureCallBackWithMessage(
           NetworkResponseErrorType.didNotSucceed, 'Unknown');
     } catch (e) {
-      log(response!.body.toString());
+      var output = weatherModelFromJson(response!.body);
+      log(output.name!);
       return onFailureCallBackWithMessage(
           NetworkResponseErrorType.exception, 'Exception: $e');
     }
