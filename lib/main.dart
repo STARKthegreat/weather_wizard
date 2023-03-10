@@ -1,15 +1,16 @@
-import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:weather_wizard/models/weather_model.dart';
 import 'package:weather_wizard/network/network_enums.dart';
 import 'package:weather_wizard/network/network_helper.dart';
 import 'package:weather_wizard/network/network_service.dart';
 import 'package:weather_wizard/network/query_params.dart';
 import 'package:weather_wizard/res/const/app_url.dart';
+import 'package:weather_wizard/view_models/city_id_provider.dart';
+import 'package:weather_wizard/view_models/weather_provider.dart';
 import 'package:weather_wizard/views/home_view.dart';
-import 'package:weather_wizard/models/weather_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +22,19 @@ void main() async {
   Hive.registerAdapter(CoordAdapter());
   Hive.registerAdapter(WeatherAdapter());
   Hive.registerAdapter(WeatherModelAdapter());
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => WeatherProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => CityIdProvider(),
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -33,15 +46,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
       home: const Home(title: 'Weather Wizard'),
@@ -90,15 +94,10 @@ class _HomeState extends State<Home> {
               } else if (snapshot.hasData &&
                   snapshot.connectionState == ConnectionState.done) {
                 // return HomePage(weather: snapshot.data!.weather![1]);
-                List weather = snapshot.data!.weather!;
-                return ListView.builder(
-                  itemCount: weather.length,
-                  itemBuilder: (context, index) {
-                    log(weather.length.toString());
-                    return HomePage(
-                      weather: weather[index],
-                    );
-                  },
+                Weather weather = snapshot.data!.weather!.first;
+
+                return HomePage(
+                  weather: weather,
                 );
               } else {
                 return const Center(
@@ -144,7 +143,7 @@ class _HomeState extends State<Home> {
   Future<WeatherModel?> getWeather() async {
     final response = await NetworkService.sendRequest(
       requestType: RequestType.get,
-      url: AppUrl().baseUrl,
+      uri: AppUrl().baseUrl,
       queryParam: QueryParams.apiQp(
         apiKey: AppUrl().appid,
         cityID: '178040',
@@ -156,6 +155,7 @@ class _HomeState extends State<Home> {
     return await NetworkHelper.filterResponse(
       callBack: (json) {
         log(output.base!);
+        return output;
       },
       response: response,
       parameterName: CallBackParameterName.all,

@@ -16,11 +16,15 @@ class HomePage extends StatelessWidget {
   final Weather weather;
   @override
   Widget build(BuildContext context) {
+    final cityList = List.generate(
+      10,
+      (index) => CityStories(locationName: weather.main!),
+    );
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(8),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.max,
           children: [
             Row(
@@ -31,46 +35,54 @@ class HomePage extends StatelessWidget {
                   onPressed: () {},
                   icon: const Icon(Icons.menu),
                 ),
-                TextField(
-                  onChanged: (value) => {},
-                  decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.search),
-                    filled: true,
-                    fillColor: Colors.white70,
-                    hintText: 'Search city',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide.none,
-                      gapPadding: 8,
+                Flexible(
+                  child: TextField(
+                    onChanged: (value) => update(value),
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.search),
+                      filled: true,
+                      fillColor: Colors.white70,
+                      hintText: 'Search city',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none,
+                      ),
                     ),
                   ),
                 )
               ],
             ),
             Row(
+              //mainAxisAlignment: MainAxisAlignment.start,
+              //mainAxisSize: MainAxisSize.min,
+              //crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  physics: const BouncingScrollPhysics(
-                      parent: AlwaysScrollableScrollPhysics()),
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) => const CityStories(),
+                Expanded(
+                  child: SizedBox(
+                    height: 100,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      physics: const ScrollPhysics(
+                        parent: BouncingScrollPhysics(),
+                      ),
+                      itemCount: cityList.length,
+                      itemBuilder: (context, index) => Container(
+                          height: 50,
+                          width: 50,
+                          margin: const EdgeInsets.all(4),
+                          child: cityList[index]),
+                    ),
+                  ),
                 ),
               ],
             ),
             RefreshIndicator(
               onRefresh: () => getWeather(),
-              child: Flexible(
-                child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  physics: const BouncingScrollPhysics(
-                      parent: AlwaysScrollableScrollPhysics()),
-                  itemBuilder: (context, index) => WeatherCard(
-                    weatherDescription: weather.description!,
-                    weatherName: weather.main!,
-                    locationName: 'Yala',
-                  ),
-                ),
+              child: WeatherCard(
+                locationName: 'Yala',
+                weatherDescription: weather.description!,
+                weatherName: weather.main!,
               ),
             )
           ],
@@ -82,7 +94,7 @@ class HomePage extends StatelessWidget {
   Future<List<WeatherModel>?> getWeather() async {
     final response = await NetworkService.sendRequest(
       requestType: RequestType.get,
-      url: AppUrl().baseUrl,
+      uri: AppUrl().baseUrl,
       queryParam: QueryParams.apiQp(
         apiKey: AppUrl().appid,
         cityID: '178040',
@@ -101,4 +113,6 @@ class HomePage extends StatelessWidget {
       },
     );
   }
+
+  update(String value) {}
 }
