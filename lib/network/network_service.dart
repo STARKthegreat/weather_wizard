@@ -30,18 +30,18 @@ class NetworkService {
 
   static Future<http.Response?>? sendRequest({
     required RequestType requestType,
-    required String url,
+    required String uri,
     Map<String, dynamic>? body,
     Map<String, String>? queryParam,
   }) async {
     try {
-      final _header = _getHeaders();
-      final _url = NetworkHelper.concatUrlQP(url, queryParam);
+      final header = _getHeaders();
+      final url = NetworkHelper.concatUrlQP(uri, queryParam);
 
       final response = await _createRequest(
         requestType: requestType,
-        uri: Uri.parse(_url),
-        headers: _header,
+        uri: Uri.parse(url),
+        headers: header,
         body: body,
       );
 

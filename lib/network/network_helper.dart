@@ -1,7 +1,5 @@
 // concat headers
-import 'dart:convert';
 import 'dart:developer';
-
 import 'package:weather_wizard/models/weather_model.dart';
 import 'package:weather_wizard/network/network_enums.dart';
 import 'package:weather_wizard/network/network_typedef.dart';

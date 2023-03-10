@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+import 'package:weather_wizard/res/const/app_res_string.dart';
 
 class CityStories extends StatelessWidget {
-  const CityStories({super.key});
+  const CityStories({super.key, required this.locationName});
+  final String locationName;
 
   @override
   Widget build(BuildContext context) {
@@ -13,9 +16,9 @@ class CityStories extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 8,
-            child: Image.asset('name'),
+            child: Lottie.asset(AppAssets.windy),
           ),
-          Text('Eldoret'),
+          Text(locationName),
         ],
       ),
     );
