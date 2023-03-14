@@ -1,10 +1,7 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:weather_wizard/models/weather_model.dart';
-import 'package:weather_wizard/network/network_helper.dart';
-import 'package:weather_wizard/network/network_service.dart';
-import 'package:weather_wizard/network/query_params.dart';
-import 'package:weather_wizard/res/const/app_url.dart';
+import 'package:weather_wizard/view_models/weather_provider.dart';
 import 'package:weather_wizard/views/city_stories.dart';
 import 'package:weather_wizard/views/weather_card.dart';
 
@@ -12,10 +9,14 @@ class HomePage extends StatelessWidget {
   const HomePage({
     super.key,
     required this.weather,
+    required this.weatherModel,
   });
   final Weather weather;
+  final WeatherModel weatherModel;
+
   @override
   Widget build(BuildContext context) {
+    final weatherProvider = Provider.of<WeatherProvider>(context);
     final cityList = List.generate(
       10,
       (index) => CityStories(locationName: weather.main!),
@@ -35,27 +36,27 @@ class HomePage extends StatelessWidget {
                   onPressed: () {},
                   icon: const Icon(Icons.menu),
                 ),
-                Flexible(
-                  child: TextField(
-                    onChanged: (value) => update(value),
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.search),
-                      filled: true,
-                      fillColor: Colors.white70,
-                      hintText: 'Search city',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                  ),
-                )
+                // Flexible(
+                //   child: TextField(
+                //     onChanged: (value) => update(value),
+                //     decoration: InputDecoration(
+                //       prefixIcon: const Icon(Icons.search),
+                //       filled: true,
+                //       fillColor: Colors.white70,
+                //       hintText: 'Search city',
+                //       border: OutlineInputBorder(
+                //         borderRadius: BorderRadius.circular(8),
+                //         borderSide: BorderSide.none,
+                //       ),
+                //     ),
+                //   ),
+                // )
               ],
             ),
             Row(
-              //mainAxisAlignment: MainAxisAlignment.start,
-              //mainAxisSize: MainAxisSize.min,
-              //crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: SizedBox(
@@ -68,19 +69,30 @@ class HomePage extends StatelessWidget {
                       ),
                       itemCount: cityList.length,
                       itemBuilder: (context, index) => Container(
-                          height: 50,
-                          width: 50,
-                          margin: const EdgeInsets.all(4),
-                          child: cityList[index]),
+                        height: 50,
+                        width: 50,
+                        margin: const EdgeInsets.all(4),
+                        child: Row(
+                          children: [
+                            cityList[index],
+                            CircleAvatar(
+                              child: IconButton(
+                                icon: const Icon(Icons.add),
+                                onPressed: () {},
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
             RefreshIndicator(
-              onRefresh: () => getWeather(),
+              onRefresh: () => weatherProvider.getWeather(),
               child: WeatherCard(
-                locationName: 'Yala',
+                locationName: weatherModel.name!,
                 weatherDescription: weather.description!,
                 weatherName: weather.main!,
               ),
@@ -88,29 +100,6 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  Future<List<WeatherModel>?> getWeather() async {
-    final response = await NetworkService.sendRequest(
-      requestType: RequestType.get,
-      uri: AppUrl().baseUrl,
-      queryParam: QueryParams.apiQp(
-        apiKey: AppUrl().appid,
-        cityID: '178040',
-      ),
-    );
-
-    log(response!.statusCode.toString());
-
-    return await NetworkHelper.filterResponse(
-      callBack: (json) {
-        WeatherModel.fromJson(json);
-      },
-      response: response,
-      onFailureCallBackWithMessage: (errorType, msg) {
-        log('Error Type-$errorType - Message: $msg');
-      },
     );
   }
 

@@ -6,6 +6,7 @@ import 'package:weather_wizard/network/network_helper.dart';
 import 'package:weather_wizard/network/network_service.dart';
 import 'package:weather_wizard/network/query_params.dart';
 import 'package:weather_wizard/res/const/app_url.dart';
+import 'package:weather_wizard/view_models/location_provider.dart';
 
 class WeatherProvider extends ChangeNotifier {
   Future<WeatherModel?> getWeather() async {
@@ -14,7 +15,9 @@ class WeatherProvider extends ChangeNotifier {
       uri: AppUrl().baseUrl,
       queryParam: QueryParams.apiQp(
         apiKey: AppUrl().appid,
-        cityID: '178040',
+        cityID: AppUrl().cityId,
+        lat: LocationProvider.myLocation.latitude.toString(),
+        lon: LocationProvider.myLocation.longitude.toString(),
       ),
     );
 
@@ -22,6 +25,7 @@ class WeatherProvider extends ChangeNotifier {
     WeatherModel output = weatherModelFromJson(response.body);
     return await NetworkHelper.filterResponse(
       callBack: (json) {
+        notifyListeners();
         return output;
       },
       response: response,
