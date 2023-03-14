@@ -8,6 +8,7 @@ import 'package:weather_wizard/network/network_helper.dart';
 import 'package:weather_wizard/network/network_service.dart';
 import 'package:weather_wizard/network/query_params.dart';
 import 'package:weather_wizard/res/const/app_url.dart';
+import 'package:weather_wizard/res/const/colors.dart';
 import 'package:weather_wizard/view_models/city_id_provider.dart';
 import 'package:weather_wizard/view_models/weather_provider.dart';
 import 'package:weather_wizard/views/home_view.dart';
@@ -46,7 +47,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: AppColors.kSecondary,
+      ),
+      darkTheme: ThemeData(
+        primaryColor: AppColors.kPrimary,
       ),
       home: const Home(title: 'Weather Wizard'),
     );
