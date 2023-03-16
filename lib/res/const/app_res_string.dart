@@ -4,4 +4,5 @@ class AppAssets {
   static String cloudyAnimation = "lib/res/animations/cloudy-1.json";
   static String cloudySunnyAnimation = "lib/res/animations/sunny-cloudy.json";
   static String windy = "lib/res/animations/windy.json";
+  static String cityJson = "lib/res/city.list.json";
 }

@@ -9,30 +9,37 @@ import 'package:weather_wizard/res/const/app_url.dart';
 import 'package:weather_wizard/view_models/location_provider.dart';
 
 class WeatherProvider extends ChangeNotifier {
+  WeatherModel weatherModel = WeatherModel();
+  bool isLoading = true;
+  bool get isLoaded => isLoading;
   Future<WeatherModel?> getWeather() async {
     final response = await NetworkService.sendRequest(
       requestType: RequestType.get,
-      uri: AppUrl().baseUrl,
+      uri: const AppUrl().baseUrl,
       queryParam: QueryParams.apiQp(
-        apiKey: AppUrl().appid,
-        cityID: AppUrl().cityId,
-        lat: LocationProvider.myLocation.latitude.toString(),
-        lon: LocationProvider.myLocation.longitude.toString(),
+        apiKey: const AppUrl().appid,
+        lat: LocationProvider().location.latitude.toString(),
+        lon: LocationProvider().location.longitude.toString(),
       ),
     );
 
     log(response!.statusCode.toString());
-    WeatherModel output = weatherModelFromJson(response.body);
-    return await NetworkHelper.filterResponse(
-      callBack: (json) {
-        notifyListeners();
-        return output;
-      },
-      response: response,
-      parameterName: CallBackParameterName.all,
-      onFailureCallBackWithMessage: (errorType, msg) {
-        log('Error Type-$errorType - Message: $msg');
-      },
-    );
+    weatherModel = weatherModelFromJson(response.body);
+    if (response.statusCode == 200) {
+      isLoading = false;
+      return await NetworkHelper.filterResponse(
+        callBack: (json) {
+          notifyListeners();
+          return weatherModel;
+        },
+        response: response,
+        parameterName: CallBackParameterName.all,
+        onFailureCallBackWithMessage: (errorType, msg) {
+          log('Error Type-$errorType - Message: $msg');
+        },
+      );
+    }
+
+    return null;
   }
 }

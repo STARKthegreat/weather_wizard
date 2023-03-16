@@ -75,16 +75,16 @@ class HomePage extends StatelessWidget {
                         child: Row(
                           children: [
                             cityList[index],
-                            CircleAvatar(
-                              child: IconButton(
-                                icon: const Icon(Icons.add),
-                                onPressed: () {},
-                              ),
-                            )
                           ],
                         ),
                       ),
                     ),
+                  ),
+                ),
+                CircleAvatar(
+                  child: IconButton(
+                    icon: const Icon(Icons.add),
+                    onPressed: () {},
                   ),
                 ),
               ],

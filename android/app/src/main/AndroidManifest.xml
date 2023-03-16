@@ -4,9 +4,6 @@
         android:label="weather_wizard"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
-        <uses-permision android:name="android.permission.ACCESS_FINE_LOCATION"/>
-        <uses-permision android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-        <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -34,4 +31,11 @@
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+  <!-- Always include this permission -->
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+  <!-- Include only if your app benefits from precise location access. -->
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 </manifest>

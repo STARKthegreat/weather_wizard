@@ -1,15 +1,14 @@
 class QueryParams {
   QueryParams._();
 
-  static Map<String, String> apiQp(
-          {required String apiKey,
-          required String cityID,
-          String? lat,
-          String? lon}) =>
+  static Map<String, String> apiQp({
+    required String lat,
+    required String lon,
+    required String apiKey,
+  }) =>
       {
         'appid': apiKey,
-        'id': cityID,
-        'lat': lat!,
-        'lon': lon!,
+        'lat': lat,
+        'lon': lon,
       };
 }

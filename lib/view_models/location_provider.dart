@@ -1,10 +1,8 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 class LocationProvider extends ChangeNotifier {
-  static late Position myLocation;
+  late Position location;
   Future<Position> getLocation() async {
     bool isServiceEnabled;
     LocationPermission permission;
@@ -31,8 +29,8 @@ class LocationProvider extends ChangeNotifier {
       return await Geolocator.getCurrentPosition();
     }
 
-    myLocation = await Geolocator.getCurrentPosition();
-    log("$myLocation");
-    return myLocation;
+    location = await Geolocator.getCurrentPosition();
+    notifyListeners();
+    return location;
   }
 }
