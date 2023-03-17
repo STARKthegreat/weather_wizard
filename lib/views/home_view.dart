@@ -6,13 +6,16 @@ import 'package:weather_wizard/views/city_stories.dart';
 import 'package:weather_wizard/views/weather_card.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({
-    super.key,
-    required this.weather,
-    required this.weatherModel,
-  });
+  const HomePage(
+      {super.key,
+      required this.weather,
+      required this.weatherModel,
+      required this.lat,
+      required this.lon});
   final Weather weather;
   final WeatherModel weatherModel;
+  final String lat;
+  final String lon;
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +93,7 @@ class HomePage extends StatelessWidget {
               ],
             ),
             RefreshIndicator(
-              onRefresh: () => weatherProvider.getWeather(),
+              onRefresh: () => weatherProvider.getWeather(lat: lat, lon: lon),
               child: WeatherCard(
                 locationName: weatherModel.name!,
                 weatherDescription: weather.description!,

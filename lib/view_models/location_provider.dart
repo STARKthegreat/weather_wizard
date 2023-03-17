@@ -3,6 +3,7 @@ import 'package:geolocator/geolocator.dart';
 
 class LocationProvider extends ChangeNotifier {
   late Position location;
+  bool isLoading = true;
   Future<Position> getLocation() async {
     bool isServiceEnabled;
     LocationPermission permission;
@@ -28,8 +29,8 @@ class LocationProvider extends ChangeNotifier {
         permission == LocationPermission.always) {
       return await Geolocator.getCurrentPosition();
     }
-
     location = await Geolocator.getCurrentPosition();
+    isLoading = false;
     notifyListeners();
     return location;
   }

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -5,6 +7,7 @@ import 'package:weather_wizard/models/weather_model.dart';
 import 'package:weather_wizard/view_models/city_id_provider.dart';
 import 'package:weather_wizard/view_models/weather_provider.dart';
 import 'package:weather_wizard/views/home_view.dart';
+import 'package:weather_wizard/view_models/location_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +28,9 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => CityIdProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => LocationProvider(),
+        )
       ],
       child: const MyApp(),
     ),
@@ -50,8 +56,11 @@ class MyApp extends StatelessWidget {
 class Home extends StatelessWidget {
   const Home({super.key, required this.title});
   final String title;
+
   @override
   Widget build(BuildContext context) {
+    final locationProvider = Provider.of<LocationProvider>(context);
+
     return Scaffold(
       backgroundColor: const Color.fromRGBO(255, 214, 10, 1),
       appBar: AppBar(
@@ -60,15 +69,26 @@ class Home extends StatelessWidget {
       ),
       body: Consumer<WeatherProvider>(
         builder: (context, value, child) {
-          value.getWeather();
+          getLocation() async {
+            final location = await locationProvider.getLocation();
+            log(location.latitude.toString());
+            value.getWeather(
+                lat: location.latitude.toString(),
+                lon: location.longitude.toString());
+          }
+
           if (value.isLoading) {
+            getLocation();
             return const Center(
               child: CircularProgressIndicator(),
             );
           }
           return HomePage(
-              weather: value.weatherModel.weather!.first,
-              weatherModel: value.weatherModel);
+            weather: value.weatherModel.weather!.first,
+            weatherModel: value.weatherModel,
+            lat: "0.52036",
+            lon: "35.26992",
+          );
         },
       ),
       // body: FutureBuilder(
